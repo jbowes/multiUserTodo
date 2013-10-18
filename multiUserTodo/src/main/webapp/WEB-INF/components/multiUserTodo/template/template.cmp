@@ -1,0 +1,8 @@
+<aura:component isTemplate="true" extends="aura:template">
+  
+  <aura:set attribute="extraScriptTags">
+    <script type="text/javascript" src="https://cdn.goinstant.net/v1/platform.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.2.1/lodash.min.js"></script>
+  </aura:set>
+
+</aura:component>
