@@ -9,7 +9,7 @@ $ git clone git@github.com:mattcreaser/multiUserTodo.git
 ```
 ### Import the project to Eclipse
 `File -> Import -> Maven -> Existing Maven Projects`.
-Hit `Next`, select the cloned repo as the root directory, and click `Finish`.
+Hit `Next`, select the `multiUserTodo` directory as the root directory, and click `Finish`.
 
 ### Setup the debug configuration
 
