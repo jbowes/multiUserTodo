@@ -37,8 +37,7 @@
       input.getValue("v.value").setValue("");
       
       // Add the item to goinstant
-      // NOTE: value should not be passed to cb, this is a platform bug!
-      cmp.get('v.goinstantKey').add(text, function(err, value, context) {
+      cmp.get('v.goinstantKey').add({ text: text, selected: false }, function(err, value, context) {
         if (err) {
           aura.error('Could not add todo to goinstant', err);
           return;
@@ -56,6 +55,11 @@
   crossout : function(cmp, event){
     var elem = event.getSource().getElement();
     $A.util.toggleClass(elem, "done");
+    
+    // This is pretty hacky but I'm not sure how else to map the element back to a goinstant key.
+    var name = event.getSource().get('v.domId');
+    var selected = event.getSource().get('v.value');
+    cmp.get('v.goinstantKey').key(name).key('selected').set(selected);
   },
   
   connectGoinstant: function(cmp) {
@@ -80,23 +84,24 @@
         }
         
         $A.run(function(){
-          _.each(value, function(text, name) {
+          _.each(value, function(value, name) {
             var cmp = $A.get('root.todo');
+            
             // TODO : It would be better to share the code that's in the helper,
             // but I couldn't figure out how to access it from here.
             var items = cmp.getValue("m.items");
             var newTodo = {
-                label: text, 
+                label: value.text, 
                 name: name,
-                selected: false, 
-                value: text, 
+                selected: value.selected, 
+                value: value.text, 
                 disabled: false
             };
             items.push(newTodo);
           });
         });
         
-        key.on('add', { bubble: true, listener: function(text, context) {
+        key.on('add', { bubble: true, listener: function(value, context) {
           $A.run(function(){
             var cmp = $A.get('root.todo');
             // TODO : It would be better to share the code that's in the helper,
@@ -104,10 +109,10 @@
             var name = context.addedKey.substr(context.addedKey.lastIndexOf('/') + 1);
             var items = cmp.getValue("m.items");
             var newTodo = {
-                label: text, 
+                label: value.text, 
                 name: name,
-                selected: false, 
-                value: text, 
+                selected: value.selected, 
+                value: value.text, 
                 disabled: false
             };
             items.push(newTodo);
@@ -128,6 +133,23 @@
               var item = items.get(i);
               if (item.name === name) {
                 items.remove(i);
+                break;
+              }
+            }
+          });
+        }});
+        
+        key.on('set', { bubble: true, listener: function(value, context) {
+          $A.run(function(){
+            var parts = context.key.split('/');
+            var name = parts[parts.length - 2]; // /todo/<name>/selected
+            
+            var cmp = $A.get('root.todo');
+            var items = cmp.getValue("m.items");
+            for (var i = 0; i < items.getLength(); ++i) {
+              var item = items.getValue(i);
+              if (item.get('name') === name) {
+                item.getValue('selected').setValue(value);
                 break;
               }
             }

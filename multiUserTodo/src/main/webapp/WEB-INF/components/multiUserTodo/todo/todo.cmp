@@ -26,7 +26,7 @@
     <ui:button aura:id="clearDone" buttonTitle="Clear done" class="clearDone" label="Clear done" press="{!c.clearDone}"/>
     <aura:iteration items="{!m.items}" var="todo" indexVar="index">
       <div>
-        <ui:inputCheckbox label="{!todo.label}" value="{!todo.selected}" click="{!c.crossout}" class="line" labelPosition="right"/>
+        <ui:inputCheckbox domId="{!todo.name}" label="{!todo.label}" value="{!todo.selected}" click="{!c.crossout}" class="line" labelPosition="right"/>
       </div>
     </aura:iteration>
   </ui:block>
